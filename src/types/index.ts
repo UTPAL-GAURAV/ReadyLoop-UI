@@ -73,6 +73,8 @@ export interface QuestionAttempt {
   id: string
   roundAttemptId: string
   questionId: string
+  questionText: string | null
+  evaluationRubric: string | null
   userAnswer: string
   strongPoints: string[]
   missedPoints: string[]
