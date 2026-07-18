@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ChevronRight, ChevronDown, ChevronUp } from 'lucide-react'
+import axios from 'axios'
 import { useApplication } from '@/hooks/useApplication'
 import { RoundCard } from '@/components/rounds/RoundCard'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -9,8 +10,19 @@ import { Badge } from '@/components/ui/badge'
 
 export function ApplicationPage() {
   const { id } = useParams<{ id: string }>()
-  const { data: app, isLoading, isError, isFetching, failureCount } = useApplication(id!)
+  const { data: app, isLoading, isError, isFetching, failureCount, error: appErr } = useApplication(id!)
   const [gistExpanded, setGistExpanded] = useState(false)
+
+  const is404 = axios.isAxiosError(appErr) && appErr.response?.status === 404
+
+  if (is404) {
+    return (
+      <div className="pt-10 text-center space-y-2">
+        <p className="text-sm text-foreground">Application not found.</p>
+        <Link to="/" className="text-xs text-primary hover:underline">Back to home</Link>
+      </div>
+    )
+  }
 
   if (isLoading || (isError && failureCount < 4 && isFetching)) {
     if (failureCount > 0) return <WakingUp />

@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { ChevronRight, Clock, HelpCircle } from 'lucide-react'
+import axios from 'axios'
 import { useRound, useRoundAttempts } from '@/hooks/useRound'
 import { useApplication } from '@/hooks/useApplication'
 import { AttemptList } from '@/components/attempts/AttemptList'
@@ -16,9 +17,21 @@ function confidenceBarColor(score: number) {
 
 export function RoundPage() {
   const { id } = useParams<{ id: string }>()
-  const { data: round, isLoading: roundLoading, isError: roundError, isFetching: roundFetching, failureCount } = useRound(id!)
+  const { data: round, isLoading: roundLoading, isError: roundError, isFetching: roundFetching, failureCount, error: roundErr } = useRound(id!)
   const { data: attempts, isLoading: attemptsLoading } = useRoundAttempts(id!)
   const { data: app } = useApplication(round?.jobApplicationId ?? '')
+
+  const is404 = axios.isAxiosError(roundErr) && roundErr.response?.status === 404
+
+  if (is404) {
+    return (
+      <div className="pt-10 text-center space-y-2">
+        <p className="text-sm text-foreground">Round not found.</p>
+        <p className="text-xs text-muted-foreground">This round may not exist yet — start a Claude session to generate it.</p>
+        <Link to="/" className="text-xs text-primary hover:underline">Back to home</Link>
+      </div>
+    )
+  }
 
   if (roundLoading || (roundError && failureCount < 4 && roundFetching)) {
     if (failureCount > 0) return <WakingUp />
