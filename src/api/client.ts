@@ -1,4 +1,5 @@
 import axios from 'axios'
+import camelcaseKeys from 'camelcase-keys'
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3001',
@@ -12,7 +13,12 @@ apiClient.interceptors.request.use((config) => {
 })
 
 apiClient.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    if (res.data && typeof res.data === 'object') {
+      res.data = camelcaseKeys(res.data, { deep: true })
+    }
+    return res
+  },
   (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('rl_jwt')

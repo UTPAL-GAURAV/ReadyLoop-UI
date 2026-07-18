@@ -31,7 +31,7 @@ export function RoundCard({ round }: { round: InterviewRound }) {
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          {round.confidenceScore !== null && (
+          {round.confidenceScore !== null && round.confidenceScore !== undefined && round.status !== 'not_attempted' && (
             <div className="space-y-1">
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Confidence</span>
@@ -47,12 +47,16 @@ export function RoundCard({ round }: { round: InterviewRound }) {
           )}
 
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />~{round.estimatedDurationMinutes} min
-            </span>
-            <span className="flex items-center gap-1">
-              <HelpCircle className="h-3 w-3" />{round.questionCount} questions
-            </span>
+            {!!round.estimatedDurationMinutes && (
+              <span className="flex items-center gap-1">
+                <Clock className="h-3 w-3" />~{round.estimatedDurationMinutes} min
+              </span>
+            )}
+            {!!round.questionCount && (
+              <span className="flex items-center gap-1">
+                <HelpCircle className="h-3 w-3" />{round.questionCount} questions
+              </span>
+            )}
           </div>
 
           {round.depthCalibrationRationale && (
