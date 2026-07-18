@@ -61,7 +61,8 @@ export interface QuestionSet {
 export interface RoundAttempt {
   id: string
   roundId: string
-  questionSetId: string
+  questionSetId: string | null
+  questionSetAttemptNumber: number | null
   confidenceScore: number | null
   status: RoundStatus | null
   startedAt: string

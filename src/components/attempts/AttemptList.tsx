@@ -13,22 +13,43 @@ function confidenceColor(score: number | null) {
   return 'destructive'
 }
 
+function buildAttemptLabels(attempts: RoundAttempt[]): Map<string, string> {
+  const labels = new Map<string, string>()
+  // Group by questionSetAttemptNumber (major), preserving insertion order (started_at asc)
+  const groups = new Map<number, RoundAttempt[]>()
+  for (const a of attempts) {
+    const major = a.questionSetAttemptNumber ?? 1
+    if (!groups.has(major)) groups.set(major, [])
+    groups.get(major)!.push(a)
+  }
+  for (const [major, group] of groups) {
+    group.forEach((a, i) => {
+      labels.set(a.id, i === 0 ? `Attempt ${major}` : `Attempt ${major}.${i}`)
+    })
+  }
+  return labels
+}
+
 export function AttemptList({ attempts }: { attempts: RoundAttempt[] }) {
   if (attempts.length === 0) {
     return <p className="text-sm text-muted-foreground py-4">No attempts yet. Start a Claude session to begin.</p>
   }
 
+  const labels = buildAttemptLabels(attempts)
+  // Show newest first
+  const sorted = [...attempts].sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime())
+
   return (
     <div className="space-y-3">
-      {attempts.map((attempt, i) => (
-        <AttemptItem key={attempt.id} attempt={attempt} index={attempts.length - i} />
+      {sorted.map((attempt) => (
+        <AttemptItem key={attempt.id} attempt={attempt} label={labels.get(attempt.id)!} defaultExpanded={attempt.id === sorted[0].id} />
       ))}
     </div>
   )
 }
 
-function AttemptItem({ attempt, index }: { attempt: RoundAttempt; index: number }) {
-  const [expanded, setExpanded] = useState(index === 1)
+function AttemptItem({ attempt, label, defaultExpanded }: { attempt: RoundAttempt; label: string; defaultExpanded: boolean }) {
+  const [expanded, setExpanded] = useState(defaultExpanded)
   const { data: questions, isLoading } = useAttempt(expanded ? attempt.id : '')
 
   return (
@@ -38,7 +59,7 @@ function AttemptItem({ attempt, index }: { attempt: RoundAttempt; index: number 
         onClick={() => setExpanded(v => !v)}
       >
         <div className="flex items-center gap-3">
-          <span className="text-sm font-medium text-foreground">Attempt {index}</span>
+          <span className="text-sm font-medium text-foreground">{label}</span>
           {attempt.status && (
             <Badge variant={confidenceColor(attempt.confidenceScore) as 'success' | 'warning' | 'destructive' | 'muted'}>
               {attempt.status === 'cleared' ? 'Cleared' : 'Failed'}
