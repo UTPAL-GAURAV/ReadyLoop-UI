@@ -36,22 +36,28 @@ export function QuestionAttemptRow({ question, index }: { question: QuestionAtte
         {question.strongPoints?.length > 0 && (
           <div className="space-y-1.5">
             <p className="text-xs font-semibold text-emerald-500 uppercase tracking-wide">Strong points</p>
-            <div className="flex flex-wrap gap-1.5">
+            <ul className="space-y-1">
               {question.strongPoints.map((pt, i) => (
-                <span key={i} className="inline-flex rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-xs text-emerald-400">{pt}</span>
+                <li key={i} className="flex items-start gap-1.5 text-sm text-emerald-400">
+                  <span className="mt-0.5 shrink-0">✓</span>
+                  <span>{pt}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         )}
 
         {question.missedPoints?.length > 0 && (
           <div className="space-y-1.5">
             <p className="text-xs font-semibold text-amber-500 uppercase tracking-wide">Missed points</p>
-            <div className="flex flex-wrap gap-1.5">
+            <ul className="space-y-1">
               {question.missedPoints.map((pt, i) => (
-                <span key={i} className="inline-flex rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs text-amber-400">{pt}</span>
+                <li key={i} className="flex items-start gap-1.5 text-sm text-amber-400">
+                  <span className="mt-0.5 shrink-0">✗</span>
+                  <span>{pt}</span>
+                </li>
               ))}
-            </div>
+            </ul>
           </div>
         )}
       </div>
