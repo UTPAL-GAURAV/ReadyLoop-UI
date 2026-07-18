@@ -5,6 +5,6 @@ export function useRound(id: string) {
   return useQuery({ queryKey: ['round', id], queryFn: () => getRound(id), enabled: !!id })
 }
 
-export function useRoundAttempts(id: string) {
-  return useQuery({ queryKey: ['round-attempts', id], queryFn: () => getRoundAttempts(id), enabled: !!id })
+export function useRoundAttempts(id: string, enabled = true) {
+  return useQuery({ queryKey: ['round-attempts', id], queryFn: () => getRoundAttempts(id), enabled: !!id && enabled })
 }

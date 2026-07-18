@@ -18,7 +18,7 @@ function confidenceBarColor(score: number) {
 export function RoundPage() {
   const { id } = useParams<{ id: string }>()
   const { data: round, isLoading: roundLoading, isError: roundError, isFetching: roundFetching, failureCount, error: roundErr } = useRound(id!)
-  const { data: attempts, isLoading: attemptsLoading } = useRoundAttempts(id!)
+  const { data: attempts, isLoading: attemptsLoading } = useRoundAttempts(id!, !!round)
   const { data: app } = useApplication(round?.jobApplicationId ?? '')
 
   const is404 = axios.isAxiosError(roundErr) && roundErr.response?.status === 404

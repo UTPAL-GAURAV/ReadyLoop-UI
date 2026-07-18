@@ -23,6 +23,7 @@ const queryClient = new QueryClient({
       },
       retryDelay: (attempt) => [5000, 15000, 25000][attempt] ?? 25000,
       staleTime: 30_000,
+      refetchOnWindowFocus: false,
     },
   },
 })
